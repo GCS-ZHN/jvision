@@ -56,6 +56,7 @@ public class RingDiagram extends JChart {
             CreateGraphics cg = new CreateGraphics(width, height, type, file);
             Graphics2D graphics2D = cg.getGraphics2D();
             graphics2D.setBackground(getBgColor());
+            graphics2D.fillRect(0, 0, width, height);
             float band = (radiusRange[1] - radiusRange[0]) / (values.size()) / (1 + gapRatio);
             float gap = band * gapRatio;
             float radius = radiusRange[0];
@@ -69,7 +70,7 @@ public class RingDiagram extends JChart {
             graphics2D.setColor(Color.BLACK);
             radius += gap > 0 ? gap : 0.5 * band;
             Arc2D.Double arc = new Arc2D.Double(width / 2 - radius, height / 2 - radius, radius * 2, radius * 2, startAngle, arcAngle, Arc2D.OPEN);
-            graphics2D.setStroke(new BasicStroke(0.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            graphics2D.setStroke(new BasicStroke(0.5f * width / 150.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
             graphics2D.draw(arc);
 
             for (double scale = valueRange[0]; scale <= valueRange[1] + 1e-5; scale+=this.step) {
@@ -83,7 +84,7 @@ public class RingDiagram extends JChart {
                     radius + 0.3 * band, 
                     "l", 
                     "m",
-                    new Font(getFontFamily(), Font.PLAIN, 5));
+                    new Font(getFontFamily(), Font.PLAIN, 5 * width / 150));
             }
             drawText(
                 graphics2D, 
@@ -91,7 +92,7 @@ public class RingDiagram extends JChart {
                 width / 2, 
                 height / 2, 
                 "m", "m", 
-                new Font(getFontFamily(), Font.BOLD, 15));
+                new Font(getFontFamily(), Font.BOLD, 10 * width / 150));
             cg.saveToFlie();
 
         } catch (Exception e) {
