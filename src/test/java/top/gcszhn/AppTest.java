@@ -5,27 +5,25 @@ import org.junit.Test;
 import top.gcszhn.jvision.RingDiagram;
 
 /**
- * Unit test for simple App.
+ * Unit test
  */
 public class AppTest 
 {
-    /**
-     * Rigorous Test :-)
-     */
+
     @Test
     public void rangDiagramTest() throws Exception {
-        float[] valueRange = new float[]{0.6358792f, 0.695f};
-        RingDiagram ringDiagram = new RingDiagram(
-            "Recall", 
-            150, 
-            150, 
+        float[] valueRange0 = new float[]{0f, 1f};
+        RingDiagram ringDiagram0 = new RingDiagram(
+            "Precision", 
+            600, 
+            600, 
             0.0f, 
-            new float[]{26, 50}, 
-            valueRange, 
+            new float[]{100, 200}, 
+            valueRange0, 
             90, 
             -350, 
-            (valueRange[1]-valueRange[0]) / 10);
-        ringDiagram.loadData("data.csv");
-        ringDiagram.draw("data.pdf");
+            (valueRange0[1]-valueRange0[0]) / 10);
+        ringDiagram0.loadData("sample/data-precision-MAST.csv");
+        ringDiagram0.draw("sample/data-precision-MAST.png");
     }
 }
