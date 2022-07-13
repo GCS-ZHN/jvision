@@ -38,7 +38,7 @@ public class Test {
     }
 }
 ```
-![ring diagram](sample\data-precision-MAST.png)
+![ring diagram](sample/data-precision-MAST.png)
 CircularHistogram
-![CircularHistogram](sample\Circular_histogram.png)
+![CircularHistogram](sample/Circular_histogram.png)
 
