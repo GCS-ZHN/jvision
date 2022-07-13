@@ -11,7 +11,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import javax.imageio.IIOImage;
@@ -33,6 +32,15 @@ import org.sourceforge.jlibeps.epsgraphics.EpsGraphics2D;
  * @author <a href="mailto:zhanghn@zju.edu.cn">Zhang Hongning</a>
  */
 public class ImageHelp {
+    private static HashMap <String, HashMap<Integer, String>> systemFontMap = new HashMap<>();
+
+    static {
+        try {
+            loadSystemFontMap();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * 返回特定字体下字符串宽度
      * @param font 字体
@@ -146,19 +154,16 @@ public class ImageHelp {
      * 获取系统所含所有字体的family名称
      * @return 代表所有字体family名称的字符串组
      */
-    public static String[] getSystemFont() {
+    public static String[] getSystemFontFamily() {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         return ge.getAvailableFontFamilyNames();
     }
-    /**
-     * 获取系统字体路径下所有的ttf字体文件及其对应的字体family组成的哈希表，仅支持Windows和Linux
-     * @return 以字体family名称为Key值，所有相应ttf文件路径名为Value值的哈希表
-     * @throws FontFormatException 字体格式异常
-     * @throws IOException 输入输出异常
-     * @throws Exception 其他异常
-     */
-    @SuppressWarnings("unused")
-    public static HashMap <String, ArrayList<String>> getSystemFontMap() throws FontFormatException, IOException, Exception {
+
+    public static HashMap<String, HashMap<Integer, String>> getSystemFontMap() {
+        return systemFontMap;
+    }
+
+    public static void loadSystemFontMap() throws FontFormatException, IOException, Exception {
         String fontdir = null;
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("windows")) {
@@ -168,7 +173,6 @@ public class ImageHelp {
         } else {
             throw new Exception ("Unsupport Operation System");
         }
-        HashMap <String, ArrayList<String>> map = new HashMap<>();
         File[] fontFiles = new File(fontdir).listFiles(new FileFilter() {
             @Override
             public boolean accept(File pathname) {
@@ -178,47 +182,25 @@ public class ImageHelp {
         for (File fontfile: fontFiles) {
             String filename = fontfile.getAbsolutePath();
             Font font = Font.createFont(Font.TRUETYPE_FONT, fontfile);
-            String fontname = font.getFamily();
-            map.putIfAbsent(fontname, new <String> ArrayList<String>());
-            map.get(fontname).add(filename);
-        
+            String family = font.getFamily();
+            String fontname = font.getFontName().toLowerCase();
+            systemFontMap.putIfAbsent(family, new HashMap<>());
+            if (fontname.contains("bold") && fontname.contains("italic")) {
+                systemFontMap.get(family).put(Font.BOLD + Font.ITALIC, filename);
+            } else if (fontname.contains("bold")) {
+                systemFontMap.get(family).put(Font.BOLD, filename);
+            } else if (fontname.contains("italic")) {
+                systemFontMap.get(family).put(Font.ITALIC, filename);
+            } else {
+                systemFontMap.get(family).put(Font.PLAIN, filename);
+            }
         }
-        return map;
     }
-    /**
-     * 返回特定字体family下的特定类型字体文件路径名，如Times New Roman, normal输入在Windows下返回
-     * C:/Windows/Fonts/times.ttf，在Linux下返回/usr/share/fonts/times.ttf
-     * @param fontFamilyName 字体family名称
-     * @param fontType 字体类型，分为正常（n、norm、normal），加粗（b、bd、bond），意大利斜体（i、it、Italy）
-     * 和意大利斜体加粗（bi、bondItaly）
-     * @return 获得的字体ttf文件路径名
-     * @throws IOException 输入输出异常
-     * @throws Exception 其他异常
-     */
-    public static String getFontFileName(String fontFamilyName, String fontType) throws IOException, Exception {
-        HashMap <String, ArrayList<String>> fontMap = getSystemFontMap();
-        String normal = null, bond=null, italy=null, bonditaly = null;
-        if (!fontMap.containsKey(fontFamilyName)) return null;
-        for (String fontfilename: fontMap.get(fontFamilyName)) {//选择加粗字体
-            if (fontfilename.toLowerCase().endsWith("b.ttf")||fontfilename.toLowerCase().endsWith("bd.ttf")) 
-                bond = fontfilename;
-            else if (fontfilename.toLowerCase().endsWith("bi.ttf")) bonditaly = fontfilename;
-            else if (fontfilename.toLowerCase().endsWith("i.ttf")) italy = fontfilename;
-            else normal = fontfilename;
-        }
-        switch (fontType) {
-            case "b":;
-            case "bd":;
-            case "bond": return bond;
-            case "i":;
-            case "it":;
-            case "italy": return italy;
-            case "bi":;
-            case "bonditaly": return bonditaly;
-            case "n":;
-            case "norm":;
-            case "normal":return normal;
-            default:return null;
+    public static String getFontFileName(String family, int style) {
+        if (systemFontMap.containsKey(family)) {
+            return systemFontMap.get(family).get(style);
+        } else {
+            return null;
         }
     }
     public static Color getColor(int r, int g, int b) {

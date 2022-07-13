@@ -84,9 +84,10 @@ public class CreateGraphics {
                     @Override
                     public BaseFont awtToPdf(Font font) {
                         try {
-                            String pdfFontName = ImageHelp.getFontFileName(font.getFamily(), "bond");
+                            String pdfFontName = ImageHelp.getFontFileName(font.getFamily(), font.getStyle());
                             if (pdfFontName==null) return PDF_DEFAULT_FONT;
-                            return BaseFont.createFont(pdfFontName, BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+                            BaseFont baseFont = BaseFont.createFont(pdfFontName, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+                            return baseFont;
                         } catch (Exception ex) {
                             return PDF_DEFAULT_FONT;
                         }
