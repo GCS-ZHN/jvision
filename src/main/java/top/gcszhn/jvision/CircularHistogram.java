@@ -18,7 +18,8 @@ import java.util.ArrayList;
  * @since 14 2021-02-04
  * @author <a href="mailto:zhanghn@zju.edu.cn">Zhang Hongning</a>
  */
-public class CircularHistogram {
+public class CircularHistogram extends JChart {
+    private static final long serialVersionUID = 202207132326054L;
     /**
      * 背景颜色，默认为白色（255,255,255）
      */
@@ -473,5 +474,15 @@ public class CircularHistogram {
         metrics = graphics.getFontMetrics();
         drawFigure(r, fontSize, barWidth, width, height, angle);
         cg.saveToFlie();
+    }
+    @Override
+    public void loadData(String file) {
+        // TODO Auto-generated method stub
+        
+    }
+    @Override
+    public void draw(String file) {
+        // TODO Auto-generated method stub
+        
     } 
 }

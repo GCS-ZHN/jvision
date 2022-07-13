@@ -21,7 +21,8 @@ import java.util.HashMap;
  * @since 14 2021-02-04
  * @author <a href="mailto:zhanghn@zju.edu.cn">Zhang Hongning</a>
  */
-public class FlowChart {
+public class FlowChart extends JChart {
+    private static final long serialVersionUID = 202207132327541L;
     /**
      * 图像等比放大比例
      */
@@ -392,6 +393,18 @@ public class FlowChart {
         graphics.rotate(rotateDegree*Math.PI/180, rotateCenter_x, rotateCenter_y);
         graphics.drawString(label, baseline_x, baseline_y);
         graphics.rotate(-rotateDegree*Math.PI/180, rotateCenter_x, rotateCenter_y);
+    }
+
+    @Override
+    public void loadData(String file) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void draw(String file) {
+        // TODO Auto-generated method stub
+        
     }
 }
 /**

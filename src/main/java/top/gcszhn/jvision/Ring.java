@@ -16,13 +16,32 @@ import java.awt.geom.Area;
  * @version 1.0
  */
 public class Ring implements Shape {
+    /**
+     * The area object used to draw the ring.
+     */
     protected Area area;
+    /**
+     * Draw circle ring.
+     * @param centerX the center x coordinate
+     * @param centerY the center y coordinate
+     * @param radius the radius of the ring
+     * @param band the band of the ring
+     */
     public Ring(double centerX, double centerY, double radius, double band) {
         this(centerX - radius, centerY - radius, radius * 2, radius * 2, band, band);
     }
-    public Ring(double x, double y, double width, double height, double widthBand, double heightBand) {
-        Ellipse2D.Double outEllipse2D = new Ellipse2D.Double(x, y, width, height);
-        Ellipse2D.Double inEllipse2D = new Ellipse2D.Double(x + widthBand, y + heightBand, width - 2 * widthBand, height - 2 * heightBand);
+    /**
+     * Draw elliptical ring
+     * @param centerX the center x coordinate
+     * @param centerY the center y coordinate
+     * @param width the width of the ring
+     * @param height the height of the ring
+     * @param widthBand the width band of the ring
+     * @param heightBand the height band of the ring
+     */
+    public Ring(double centerX, double centerY, double width, double height, double widthBand, double heightBand) {
+        Ellipse2D.Double outEllipse2D = new Ellipse2D.Double(centerX, centerY, width, height);
+        Ellipse2D.Double inEllipse2D = new Ellipse2D.Double(centerX + widthBand, centerY + heightBand, width - 2 * widthBand, height - 2 * heightBand);
         this.area = new Area(outEllipse2D);
         this.area.subtract(new Area(inEllipse2D));
     }
