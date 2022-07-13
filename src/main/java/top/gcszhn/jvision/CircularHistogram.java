@@ -461,7 +461,7 @@ public class CircularHistogram {
         实例化当前类，配置字体
         */
         String fontName = "Courier New";
-        String[] fontlist = ImageHelp.getSystemFont();
+        String[] fontlist = ImageHelp.getSystemFontFamily();
         boolean fontExist = false;
         for (String name: fontlist) if (fontName.equals(name)) fontExist = true;
         if (!fontExist) fontName = null;//字体不存在时用默认字体
