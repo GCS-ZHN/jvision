@@ -14,7 +14,7 @@
         <dependency>
             <groupId>top.gcszhn</groupId>
             <artifactId>jvision</artifactId>
-            <version>1.0</version>
+            <version>1.2</version>
         </dependency>
     </dependencies>
 ```
