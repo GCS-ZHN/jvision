@@ -1,4 +1,19 @@
-package top.gcszhn.jvision;
+/*
+ * Copyright © 2022 <a href="mailto:zhang.h.n@foxmail.com">Zhang.H.N</a>.
+ *
+ * Licensed under the Apache License, Version 2.0 (thie "License");
+ * You may not use this file except in compliance with the license.
+ * You may obtain a copy of the License at
+ *
+ *       http://wwww.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language govering permissions and
+ * limitations under the License.
+ */
+package top.gcszhn.jvision.tools;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -7,6 +22,10 @@ import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.FontMapper;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfWriter;
+
+import lombok.Getter;
+import top.gcszhn.jvision.JvisionException;
+import top.gcszhn.jvision.Stage;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -27,11 +46,11 @@ public class CreateGraphics {
     /**
      * 用于绘图的Graphics 2D对象
      */
-    private Graphics2D graphics;
+    private @Getter Graphics2D graphics;
     /**
      * 输出文件类型，暂时支持pdf、eps、jpg
      */
-    private final String fileType;
+    private @Getter final String fileType;
     /**
      * 输出文件名
      */
@@ -58,7 +77,7 @@ public class CreateGraphics {
      * @throws IOException 输入输出异常
      * @throws Exception 其他异常
      */
-    public CreateGraphics(int width, int height, String type, String outfilename) throws DocumentException, IOException, Exception {
+    public CreateGraphics(int width, int height, String type, String outfilename) throws JvisionException {
         fileType = type;
         outputFileName = outfilename;
         switch (fileType) {
@@ -79,12 +98,17 @@ public class CreateGraphics {
             }
             case "pdf":{
                 document = new Document(new Rectangle(width, height));
-                final BaseFont PDF_DEFAULT_FONT = BaseFont.createFont();
+                BaseFont PDF_DEFAULT_FONT;
+                try {
+                    PDF_DEFAULT_FONT = BaseFont.createFont();
+                } catch (DocumentException|IOException e) {
+                    throw new JvisionException("Create pdf font failed", e, Stage.GRAHPIC_INITIALIZATION);
+                }
                 FontMapper fontMapper = new FontMapper() {
                     @Override
                     public BaseFont awtToPdf(Font font) {
                         try {
-                            String pdfFontName = ImageHelp.getFontFileName(font.getFamily(), font.getStyle());
+                            String pdfFontName = ImageTool.getFontFileName(font.getFamily(), font.getStyle());
                             if (pdfFontName==null) return PDF_DEFAULT_FONT;
                             BaseFont baseFont = BaseFont.createFont(pdfFontName, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
                             return baseFont;
@@ -94,10 +118,15 @@ public class CreateGraphics {
                     }
                     @Override
                     public Font pdfToAwt(BaseFont bf, int i) {
-                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                        throw new UnsupportedOperationException("Not supported yet.");
                     }
                 };
-                PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(outputFileName));
+                PdfWriter writer;
+                try {
+                    writer = PdfWriter.getInstance(document, new FileOutputStream(outputFileName));
+                } catch (DocumentException|IOException e) {
+                    throw new JvisionException("Create pdf writer failed", e, Stage.GRAHPIC_INITIALIZATION);
+                }
                 document.open();
                 PdfContentByte pcb = writer.getDirectContent();
                 graphics = pcb.createGraphics(width, height, fontMapper);
@@ -108,53 +137,50 @@ public class CreateGraphics {
                 break;
             }
             
-            default:throw new Exception("Unsupport File Type: "+ type);
+            default:throw new JvisionException("Unsupport File Type: "+ type, null, Stage.GRAHPIC_INITIALIZATION);
         }
         graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);//文字抗锯齿
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);//画图抗锯齿
         
     }
     /**
-     * 获取构建的Graphics2D对象
-     * @return 构建的Graphics2D对象
-     */
-    public Graphics2D getGraphics2D() {
-        return graphics;
-    }
-    /**
      * 设置jpg输出格式的dpi
-     * @param value jpg输出格式的dpi
+     * @param dpi jpg输出格式的dpi
      */
-    public void setJpegDPI(int value) {
-        dpi = value;
+    public void setJpegDPI(int dpi) {
+        this.dpi = dpi;
     }
     /**
      * 将绘图结果输出到文件
      * @throws IOException 输入输出异常
      * @throws Exception 其他异常
      */
-    public void saveToFlie() throws IOException, Exception {
-        switch(fileType) {
-            case "jpg": {
-                graphics.dispose();
-                ImageHelp.saveAsJPEG(image, outputFileName, dpi);
-                break;
+    public void saveToFile() throws JvisionException {
+        try {
+            switch(fileType) {
+                case "jpg": {
+                    graphics.dispose();
+                    ImageTool.saveAsJPEG(image, outputFileName, dpi);
+                    break;
+                }
+                case "png": {
+                    graphics.dispose();
+                    ImageTool.saveAsPNG(image, new FileOutputStream(outputFileName), dpi);
+                    break;
+                }
+                case "pdf": {
+                    graphics.dispose();
+                    document.close();
+                    break;
+                }
+                case "eps": {
+                    ImageTool.saveAsEPS((EpsGraphics2D) graphics, outputFileName);
+                    break;
+                }
             }
-            case "png": {
-                graphics.dispose();
-                ImageHelp.saveAsPNG(image, new FileOutputStream(outputFileName), dpi);
-                break;
-            }
-            case "pdf": {
-                graphics.dispose();
-                document.close();
-                break;
-            }
-            case "eps": {
-                ImageHelp.saveAsEPS((EpsGraphics2D) graphics, outputFileName);
-                break;
-            }
-            default:throw new Exception("Unsupport File Type: "+ fileType);
+        } catch (Exception e) {
+            throw new JvisionException("Save graphic to file failed", e, Stage.GRAHPIC_SERIALIZATION);
         }
+
     }
 }

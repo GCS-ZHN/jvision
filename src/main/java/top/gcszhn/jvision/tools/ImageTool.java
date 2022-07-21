@@ -1,4 +1,4 @@
-package top.gcszhn.jvision;
+package top.gcszhn.jvision.tools;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -33,7 +33,7 @@ import org.sourceforge.jlibeps.epsgraphics.EpsGraphics2D;
  * @since 14 2021-02-04
  * @author <a href="mailto:zhanghn@zju.edu.cn">Zhang Hongning</a>
  */
-public class ImageHelp {
+public class ImageTool {
     /**
      * Font family in the system.
      */
@@ -266,10 +266,21 @@ public class ImageHelp {
      */
     public static Color getColor(String hex) {
         try {
-            return new Color(
-                    Integer.parseInt(hex.substring(1, 3), 16),
-                    Integer.parseInt(hex.substring(3, 5), 16),
-                    Integer.parseInt(hex.substring(5, 7), 16));
+            if (hex.startsWith("#")) {
+                if (hex.length() == 7)
+                    return new Color(
+                        Integer.parseInt(hex.substring(1, 3), 16),
+                        Integer.parseInt(hex.substring(3, 5), 16),
+                        Integer.parseInt(hex.substring(5, 7), 16));
+                else if (hex.length() == 9) {
+                    return new Color(
+                        Integer.parseInt(hex.substring(1, 3), 16),
+                        Integer.parseInt(hex.substring(3, 5), 16),
+                        Integer.parseInt(hex.substring(5, 7), 16),
+                        Integer.parseInt(hex.substring(7, 9), 16));
+                }
+            }
+            throw new RuntimeException("Invalid color hex string: " + hex);
         } catch (Exception e) {
             throw new RuntimeException("Invalid color hex string: " + hex);
         }

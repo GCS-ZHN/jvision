@@ -28,28 +28,51 @@
     </server>
    </servers>
  ```
-例如下面是绘制示例环形统计图
+# 使用
+目前支持两种图形类型
+1. 绘制示例环形统计图
 ```java
-import top.gcszhn.jvision.RingDiagram;
+import top.gcszhn.jvision.chart.RingDiagram;
 public class Test {
     public static void main(String[] args) {
-        float[] valueRange0 = new float[]{0.5f, 1f};
+        float[] valueRange0 = new float[] { 0.9f, 1f };
         RingDiagram ringDiagram0 = new RingDiagram(
-            "Precision", 
-            150, 
-            150, 
-            0.0f, 
-            new float[]{26, 50}, 
-            valueRange0, 
-            90, 
-            -350, 
-            (valueRange0[1]-valueRange0[0]) / 10);
-        ringDiagram0.loadData("sample/data-precision-MAST.csv");
-        ringDiagram0.draw("sample/data-precision-MAST.png");
+                "Precision",
+                600,
+                600,
+                0.2f,
+                new float[] { 80, 200 },
+                valueRange0,
+                90,
+                -336,
+                (valueRange0[1] - valueRange0[0]) / 15,
+                true);
+        ringDiagram0.setFontFamily("Calibri");
+        ringDiagram0.setFontStyle(Font.PLAIN);
+        ringDiagram0.loadData("sample/ring_diagram_data/data-precision-Wilcoxon.csv");
+        ringDiagram0.draw("sample/ring_diagram_data/data-precision-Wilcoxon.pdf");
+        ringDiagram0.draw("sample/ring_diagram_data/data-precision-Wilcoxon.png");
+        ringDiagram0.draw("sample/ring_diagram_data/data-precision-Wilcoxon.eps");
     }
 }
 ```
-![ring diagram](sample/data-precision-MAST.png)
-CircularHistogram
-![CircularHistogram](sample/Circular_histogram.png)
+![ring diagram](sample/ring_diagram_data/data-precision-Wilcoxon.png)
+2. 绘制环形直方图
+```java
+import top.gcszhn.jvision.chart.CircularHistogram;
+public class Test {
+    public static void main(String[] args) {
+        CircularHistogram histogram = new CircularHistogram();
+        histogram.setFontFamily("Courier New");
+        histogram.loadData("sample/circular_histogram_data/sample.csv", true, 100, true);
+        histogram.draw("sample/circular_histogram_data/sample.pdf");
+        histogram.draw("sample/circular_histogram_data/sample.eps");
+        histogram.draw("sample/circular_histogram_data/sample.png");
+    }
+}
+```
+![CircularHistogram](sample/circular_histogram_data/sample.png)
 
+# 更新预告
+- 支持flowChart
+- 支持多样本进展时间线
